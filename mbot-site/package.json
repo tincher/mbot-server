@@ -1,0 +1,13 @@
+{
+  "name": "mbot-site",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "^4.1.3",
+    "gulp-sass": "^4.0.1",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.4",
+    "vue": "^2.5.17"
+  }
+}
