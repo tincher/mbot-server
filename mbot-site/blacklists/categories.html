@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="../style.css">
+
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+    <script src="../node_modules/vue-resource/dist/vue-resource.min.js"></script>
+
+    <title>MBot</title>
+</head>
+
+<body>
+    <div id="navbar-placeholder"></div>
+    <script>
+        $(function() {
+            $('#navbar-placeholder').load('../templates/navbar.html');
+        });
+    </script>
+    <div id="items">
+        <div class="container">
+            <div class="row">
+                <div class="panel">
+                    <h2>Blockierte Kategorien</h2>
+                </div>
+            </div>
+            <div v-if="ratelimitExceeded">
+                <div class="alert alert-warning" role="alert">
+                    Zu viele Anfragen an den BigBuy-Server auf einmal, bitte warten!<br />
+                    <h4>Die Seite lädt automatisch neu!</h4>
+                </div>
+            </div>
+            <div v-if="!ratelimitExceeded" class="just-padding">
+
+                <div v-for="mainItem, i in filterItems(2)" class="list-group list-group-root">
+
+                    <a :href="'#item-'+i" v-bind:class="{'list-group-item-danger' : mainItem.blacklisted}" class="list-group-item list-group-item-action" data-toggle="collapse">
+                        <div class="itemRow">
+                            <div class="col-lg-10">
+                                <i v-if="mainItem.children.length > 0" class="fa fa-caret-right"></i> {{mainItem.name}}
+                            </div>
+                            <div class="col-lg-1" v-if="!mainItem.blacklisted">
+                                <span class="btn btn-xs btn-default" v-on:click="addItem(mainItem)">
+                                    <span class="fa fa-trash-alt" aria-hidden="true"></span>
+                                </span>
+                            </div>
+                            <div class="col-lg-1" v-if="mainItem.blacklisted">
+                                <span class="btn btn-xs btn-default" v-on:click="deleteItem(mainItem)">
+                                    <span class="far fa-check-square"></span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <div v-for="fItem, j in mainItem.children" class="list-group collapse" :id="'item-'+i">
+                        <a :href="'#item-'+i+'-'+j" v-bind:class="{'list-group-item-danger' : mainItem.blacklisted || fItem.blacklisted}" class="list-group-item list-group-item-action" data-toggle="collapse">
+                            <div class="itemRow">
+                                <div class="col-lg-10">
+                                    <i v-if="fItem.children.length > 0" class="fa fa-caret-right"></i>{{fItem.name}}
+                                </div>
+                                <div class="col-lg-1" v-if="!(mainItem.blacklisted || fItem.blacklisted)">
+                                    <span class="btn btn-xs btn-default" v-on:click="addItem(fItem)">
+                                        <span class="fa fa-trash-alt" aria-hidden="true"></span>
+                                    </span>
+                                </div>
+                                <div class="col-lg-1" v-if="mainItem.blacklisted || fItem.blacklisted">
+                                    <span class="btn btn-xs btn-default" v-on:click="deleteItem(fItem)">
+                                        <span class="far fa-check-square"></span>
+                                </div>
+                            </div>
+                        </a>
+                        <div v-for="sItem, k in fItem.children" class="list-group collapse" :id="'item-'+i+'-'+j">
+                            <a :href="'#item-'+i+'-'+j+'-'+k" v-bind:class="{'list-group-item-danger' : mainItem.blacklisted || fItem.blacklisted || sItem.blacklisted}" class="list-group-item list-group-item-action" data-toggle="collapse">
+                                <div class="itemRow">
+                                    <div class="col-lg-10">
+                                        <i v-if="sItem.children.length > 0" class="fa fa-caret-right"></i>{{sItem.name}}
+                                    </div>
+                                    <div class="col-lg-1" v-if="!(mainItem.blacklisted || fItem.blacklisted || sItem.blacklisted)">
+                                        <span class="btn btn-xs btn-default" v-on:click="addItem(sItem)">
+                                            <span class="fa fa-trash-alt" aria-hidden="true"></span>
+                                        </span>
+                                    </div>
+                                    <div class="col-lg-1" v-if="mainItem.blacklisted || fItem.blacklisted || sItem.blacklisted">
+                                        <span class="btn btn-xs btn-default" v-on:click="deleteItem(sItem)">
+                                            <span class="far fa-check-square"></span>
+                                    </div>
+                                </div>
+                            </a>
+                            <div v-for="tItem, l in sItem.children" class="list-group collapse" :id="'item-'+i+'-'+j+'-'+k">
+                                <a href="#" class="list-group-item" v-bind:class="{'list-group-item-danger' : mainItem.blacklisted || fItem.blacklisted || sItem.blacklisted || tItem.blacklisted}">
+                                    <div class="itemRow">
+                                        <div class="col-lg-10">
+                                            <i v-if="tItem.children.length > 0" class="fa fa-caret-right"></i>{{tItem.name}}
+                                        </div>
+                                        <div class="col-lg-1" v-if="!(mainItem.blacklisted || fItem.blacklisted || sItem.blacklisted || tItem.blacklisted)">
+                                            <span class="btn btn-xs btn-default" v-on:click="addItem(tItem)">
+                                                <span class="fa fa-trash-alt" aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="col-lg-1" v-if="mainItem.blacklisted || fItem.blacklisted || sItem.blacklisted || tItem.blacklisted">
+                                            <span class="btn btn-xs btn-default" v-on:click="deleteItem(tItem)">
+                                                <span class="far fa-check-square"></span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <script src="blacklists.js"></script>
+
+</body>
+
+</html>

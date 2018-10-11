@@ -8,6 +8,10 @@
     "gulp-sass": "^4.0.1",
     "jquery": "^3.3.1",
     "popper.js": "^1.14.4",
-    "vue": "^2.5.17"
+    "vue": "^2.5.17",
+    "vue-resource": "^1.5.1"
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.3.1"
   }
 }
