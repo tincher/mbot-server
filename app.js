@@ -28,8 +28,8 @@ passport.use(new Strategy(
                     return cb(null, user)
                 }
             }
-            return cb(null, false)
         });
+        return cb(null, false)
     }
 ));
 passport.serializeUser(function(user, cb) {
