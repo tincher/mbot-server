@@ -32,7 +32,7 @@ passport.use(new Strategy(
                 }
             }
         }
-        return cb(null, user)
+        return cb(null, result)
     }));
 
 
