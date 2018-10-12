@@ -22,13 +22,13 @@ var users = require('./users.json');
 
 passport.use(new Strategy(
     function(username, password, cb) {
-        result = false;
+        var result = false;
         let user = JSON.parse('{"username":"' + username + '","password":"' + password + '"}')
 
-        for (var i = 0; i < user.length; i++) {
-            if (element.username === username) {
-                if (element.password === password) {
-                    result = user;
+        for (var i = 0; i < users.length; i++) {
+            if (users[i].username === username) {
+                if (users[i].password === password) {
+                    result = users[i];
                 }
             }
         }
