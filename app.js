@@ -10,10 +10,13 @@ const schedule = require('node-schedule');
 const request = require('request');
 const util = require('util')
 const cors = require('cors')
+const mysql = require('mysql')
+const fs = require('fs')
+const ini = require('ini')
 
-const skucsvpath = 'C:/Users/jojoe/Desktop/projects/manne/skus.csv'
-const brandscsvpath = 'C:/Users/jojoe/Desktop/projects/manne/brands.csv'
-const categoriescsvpath = 'C:/Users/jojoe/Desktop/projects/manne/categories.csv'
+const skucsvpath = 'C:/Users/jojoe/Desktop/projects/sparbix/skus.csv'
+const brandscsvpath = 'C:/Users/jojoe/Desktop/projects/sparbix/brands.csv'
+const categoriescsvpath = 'C:/Users/jojoe/Desktop/projects/sparbix/categories.csv'
 
 const bigbuyurl = 'https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=de'
 
@@ -109,6 +112,24 @@ app.get('/:type/get',
                 res.send(jsonObj)
             })
         } else {
+            var config = ini.parse(fs.readFileSync('../sparbix/account.ini', 'utf-8'))
+            var con = mysql.createConnection({
+                host: config.DB.host,
+                user: config.DB.user,
+                password: config.DB.password,
+                database: 'mbot'
+            });
+            sql = 'SELECT * FROM bb_categories'
+            con.connect(function(err) {
+                if (err) throw err;
+                console.log("Connected!");
+                con.query(sql, function(err, result) {
+                    if (err) throw err;
+                    console.log("Result: " + result);
+                    return result;
+                });
+            });
+
             var categories = [];
             var options = {
                 url: bigbuyurl,
