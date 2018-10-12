@@ -21,17 +21,20 @@ var users = require('./users.json');
 
 passport.use(new Strategy(
     function(username, password, cb) {
+        result = false;
         let user = JSON.parse('{"username":"' + username + '","password":"' + password + '"}')
-        users.forEach(element => {
+
+        for (var i = 0; i < user.length; i++) {
             if (element.username === username) {
                 if (element.password === password) {
-                    return cb(null, user)
+                    result = user;
                 }
             }
-        });
-        return cb(null, false)
-    }
-));
+        }
+        return cb(null, user)
+    }));
+
+
 passport.serializeUser(function(user, cb) {
     cb(null, user.username);
 });
