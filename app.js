@@ -9,6 +9,7 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const schedule = require('node-schedule');
 const request = require('request');
 const util = require('util')
+const cors = require('cors')
 
 const skucsvpath = 'C:/Users/jojoe/Desktop/projects/manne/skus.csv'
 const brandscsvpath = 'C:/Users/jojoe/Desktop/projects/manne/brands.csv'
@@ -60,6 +61,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.json());
 app.use(express.static('mbot-site'));
+app.use(cors);
 
 app.listen(3000, () => console.log('MBot listening on port 3000!'));
 
