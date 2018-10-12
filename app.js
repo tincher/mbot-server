@@ -61,7 +61,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.json());
 app.use(express.static('mbot-site'));
-app.use(cors);
+app.use(cors());
 
 app.listen(3000, () => console.log('MBot listening on port 3000!'));
 
